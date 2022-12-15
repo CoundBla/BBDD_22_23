@@ -76,7 +76,7 @@ public class Main {
         // ir iterando y creando un objeto con cada Oficina que tenga asociada algún segmento de esa calle,
         // y añadirlos a la lista
 
-        return new List;
+        return ;
     }
 
     public static String cochesSinUtilizarPeriodo(int periodo) {
