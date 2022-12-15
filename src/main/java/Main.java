@@ -1,6 +1,8 @@
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
 import expresscorreos.model.Cartero;
+import expresscorreos.model.Oficina;
 
 public class Main {
     // @TODO: Sustituya xxxx por los parámetros de su conexión
@@ -64,9 +66,26 @@ public class Main {
         // Tenga en cuenta que la consulta a la base de datos le devolverá un ResultSet sobre el que deberá
         // ir iterando y creando un objeto con cada Cartero que cumpla con las condiciones,
         // y añadirlos a la lista
+        List<Cartero> listaCarteros = new ArrayList<Cartero>();
 
-        return new List<Cartero>() {
-        };
+        try {
+            PreparedStatement stmt = conn.prepareStatement("select c.dni_cartero as dni, c.nombre as nombre, c.apellidos as apellidos from reparto " +
+                    "inner join cartero c on c.dni_cartero = r.dni_cartero " +
+                    "where r.fecha_reserva between adddate(sysdate(),?) AND sysdate() " +
+                    "group by c.dni_cartero");
+            stmt.setInt(1,periodo);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                Cartero c = new Cartero(rs.getString("dni"),rs.getString("nombre"),rs.getString("apellidos"));
+                listaCarteros.add(c);
+            }
+            rs.close();
+        }catch (Exception e){
+            System.out.println(e.toString());
+        }
+
+
+        return listaCarteros;
     }
 
     public static List<Oficina> oficinasAsociadasCalle(String calle) {
@@ -75,8 +94,8 @@ public class Main {
         // Tenga en cuenta que la consulta a la base de datos le devolverá un ResultSet sobre el que deberá
         // ir iterando y creando un objeto con cada Oficina que tenga asociada algún segmento de esa calle,
         // y añadirlos a la lista
-
-        return ;
+    List<Oficina> listaoficinas = new ArrayList<Oficina>();
+        return listaoficinas;
     }
 
     public static String cochesSinUtilizarPeriodo(int periodo) {
