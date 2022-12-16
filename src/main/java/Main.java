@@ -2,6 +2,7 @@ import java.sql.*;
 import java.util.LinkedList;
 import java.util.List;
 import expresscorreos.model.Cartero;
+import expresscorreos.model.Coche;
 import expresscorreos.model.Oficina;
 
 public class Main {
@@ -132,10 +133,27 @@ public class Main {
     public static String cochesSinUtilizarPeriodo(int periodo) {
         // @TODO: complete este método para que muestre por pantalla una lista de los coches que no se han
         // utilizado en los últimos "periodo" días (implementar para periodo=30)
-try {
+
+    LinkedList<Coche> coches = new LinkedList<>();
+    try {
+        PreparedStatement stmt = conn.prepareStatement("SELECT c.capacidad, c.matricula, c.id_oficina from coches c inner join reparto r ON r.matricula = c.matricula WHERE c.matricula NOT IN(SELECT r.matricula from reparto r where r.fecha_reserva BETWEEN date_add(sysdate(),interval -? day) AND sysdate()\n");
+        stmt.setInt(1,periodo);
+        ResultSet rs = stmt.executeQuery();
+        while (rs.next()) {
+            String matricula= rs.getString("matricula");
+            int capacidad= rs.getFloat("capacidad");
+            int id_oficina= rs.getInt("id_oficina");
+            coches.add(new Coche(matricula, capacidad, id_oficina));
+        }
+        rs.close();
+        stmt.close();
+        System.out.println("Coches que no entran en el periodo: ");
+        for(int i=0;i<coches.size();i++){
+            System.out.println(coches.get(i).getCapacidad()+" "+coches.get(i).getMatricula()+" "+coches.get(i).getId_oficina());
+        }
+    }catch(Exception e){
+        System.out.println("Error en la busqueda de coches");
+    }
+
+        return coches;
 };
-}
-        return new String();
-
-
-}
