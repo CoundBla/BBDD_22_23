@@ -1,4 +1,5 @@
 import java.sql.*;
+import java.util.LinkedList;
 import java.util.List;
 import expresscorreos.model.Cartero;
 
@@ -57,16 +58,36 @@ public class Main {
 
     }
 
-    public static List<Cartero> carterosRepartoCochePeriodo(int periodo) {
+    public static LinkedList<Cartero> carterosRepartoCochePeriodo(int periodo) {
         // @TODO: complete este método para que muestre por pantalla una lista de carteros que han
         // realizado un reparto con coche en el periodo comprendido por los últimos "periodo" días
         // (implementar para periodo=7)
         // Tenga en cuenta que la consulta a la base de datos le devolverá un ResultSet sobre el que deberá
         // ir iterando y creando un objeto con cada Cartero que cumpla con las condiciones,
         // y añadirlos a la lista
+        LinkedList<Cartero> carteros=new LinkedList<>();
+        try{
+            PreparedStatement stmt = conn.prepareStatement("SELECT c.dni_cartero,c.nombre,c.apellidos FROM CARTERO c INNER JOIN REPARTO r ON r.dni_cartero=c.dni_cartero WHERE r.fecha_reserva BETWEEN date_add(sysdate(),interval -? day) AND sysdate()\n");
+            stmt.setInt(1,periodo);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                String dni= rs.getString("dni_cartero");
+                String nombre= rs.getString("nombre");
+                String apellidos= rs.getString("apellidos");
+                carteros.add(new Cartero(dni,nombre,apellidos));
 
-        return new List<Cartero>() {
-        };
+            }
+            rs.close();
+            stmt.close();
+
+            System.out.println("Carteros en el periodo: ");
+            for(int i=0;i<carteros.size();i++){
+                System.out.println(carteros.get(i).getDNI()+" "+carteros.get(i).getNombre()+" "+carteros.get(i).getApellidos());
+            }
+        }catch(Exception e){
+            System.out.println("Error en la busqueda de carteros");
+        }
+        return carteros;
     }
 
     public static List<Oficina> oficinasAsociadasCalle(String calle) {
