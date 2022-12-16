@@ -26,6 +26,9 @@ public class Main {
         conn = DriverManager.getConnection(url, DB_USER, DB_PASS);
 
         // @TODO pruebe sus funciones
+        nuevoCartero("22334455A","Pablo","Garcia Hernandez");
+        carterosRepartoCochePeriodo(7);
+
 
         conn.close();
     }
