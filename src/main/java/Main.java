@@ -16,7 +16,7 @@ public class Main {
 
     private static final String DB_USER = "root";
 
-    private static final String DB_PASS = "123789";
+    private static final String DB_PASS = "";
 
     private static Connection conn;
 
@@ -28,6 +28,7 @@ public class Main {
         conn = DriverManager.getConnection(url, DB_USER, DB_PASS);
 
         // @TODO pruebe sus funciones
+        nuevoCartero("22334455A","Pablo","Garcia Hernandez");
         nuevoCartero("22334455A","Pablo","Garcia Hernandez");
         carterosRepartoCochePeriodo(7);
         cochesSinUtilizarPeriodo(30);
@@ -41,7 +42,7 @@ public class Main {
         // @TODO: complete este método para que cree un nuevo cartero en la base de datos
         int existDNI = 0;
         try {
-            PreparedStatement stmt = conn.prepareStatement("SELECT 1 as exist from cartero where dni_cartero = ?");
+            PreparedStatement stmt = conn.prepareStatement("SELECT 1 as exist from CARTERO where dni_cartero = ?");
             stmt.setString(1,DNI);
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
@@ -51,7 +52,7 @@ public class Main {
             if(existDNI>=1){
                 throw new Exception("El DNI introducido ya existe");
             }
-            stmt = conn.prepareStatement("INSERT INTO cartero (dni_cartero, nombre, apellidos) VALUES (?, ? ,?)");
+            stmt = conn.prepareStatement("INSERT INTO CARTERO (dni_cartero, nombre, apellidos) VALUES (?, ? ,?)");
 
             stmt.setString(1, DNI);
             stmt.setString(2, nombre);
@@ -136,7 +137,7 @@ public class Main {
 
         LinkedList<Coche> coches = new LinkedList<>();
         try {
-            PreparedStatement stmt = conn.prepareStatement("SELECT c.capacidad, c.matricula, c.id_oficina from coches c inner join reparto r ON r.matricula = c.matricula WHERE c.matricula NOT IN(SELECT r.matricula from reparto r where r.fecha_reserva BETWEEN date_add(sysdate(),interval -? day) AND sysdate()\n");
+            PreparedStatement stmt = conn.prepareStatement("SELECT c.capacidad, c.matricula, c.id_oficina FROM COCHE c inner join REPARTO r ON r.matricula = c.matricula WHERE c.matricula NOT IN (SELECT r.matricula FROM REPARTO r WHERE r.fecha_reserva BETWEEN date_add(sysdate(),interval -? day) AND sysdate())");
             stmt.setInt(1, periodo);
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
