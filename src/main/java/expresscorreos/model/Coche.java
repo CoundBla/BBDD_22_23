@@ -2,12 +2,12 @@ package expresscorreos.model;
 
 public class Coche {
     private String matricula;
-    private float capcidad;
+    private float capacidad;
     private int id_oficina;
 
-    public Coche(String matricula, float capcidad, int id_oficina) {
+    public Coche(String matricula, float capacidad, int id_oficina) {
         this.matricula = matricula;
-        this.capcidad = capcidad;
+        this.capacidad = capacidad;
         this.id_oficina = id_oficina;
     }
 
@@ -19,12 +19,12 @@ public class Coche {
         this.matricula = matricula;
     }
 
-    public float getCapcidad() {
-        return capcidad;
+    public float getCapacidad() {
+        return capacidad;
     }
 
-    public void setCapcidad(float capcidad) {
-        this.capcidad = capcidad;
+    public void setCapacidad(float capacidad) {
+        this.capacidad = capacidad;
     }
 
     public int getId_oficina() {

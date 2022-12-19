@@ -1,7 +1,8 @@
 import java.sql.*;
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import expresscorreos.model.Cartero;
+import expresscorreos.model.Coche;
 import expresscorreos.model.Oficina;
 
 public class Main {
@@ -27,6 +28,9 @@ public class Main {
         conn = DriverManager.getConnection(url, DB_USER, DB_PASS);
 
         // @TODO pruebe sus funciones
+        nuevoCartero("22334455A","Pablo","Garcia Hernandez");
+        carterosRepartoCochePeriodo(7);
+
 
         conn.close();
     }
@@ -83,26 +87,92 @@ public class Main {
         }catch (Exception e){
             System.out.println(e.toString());
         }
+        LinkedList<Cartero> carteros=new LinkedList<>();
+        try{
+            PreparedStatement stmt = conn.prepareStatement("SELECT c.dni_cartero,c.nombre,c.apellidos FROM CARTERO c INNER JOIN REPARTO r ON r.dni_cartero=c.dni_cartero WHERE r.fecha_reserva BETWEEN date_add(sysdate(),interval -? day) AND sysdate()\n");
+            stmt.setInt(1,periodo);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                String dni= rs.getString("dni_cartero");
+                String nombre= rs.getString("nombre");
+                String apellidos= rs.getString("apellidos");
+                carteros.add(new Cartero(dni,nombre,apellidos));
+
+            }
+            rs.close();
+            stmt.close();
 
 
         return listaCarteros;
+            System.out.println("Carteros en el periodo: ");
+            for(int i=0;i<carteros.size();i++){
+                System.out.println(carteros.get(i).getDNI()+" "+carteros.get(i).getNombre()+" "+carteros.get(i).getApellidos());
+            }
+        }catch(Exception e){
+            System.out.println("Error en la busqueda de carteros");
+        }
+        return carteros;
     }
 
-    public static List<Oficina> oficinasAsociadasCalle(String calle) {
+    public static LinkedList<Oficina> oficinasAsociadasCalle(String calle) {
         // @TODO: complete este método para que muestre por pantalla una lista de las oficinas que
         // dan servicio a la C/Alcalá de Madrid.
         // Tenga en cuenta que la consulta a la base de datos le devolverá un ResultSet sobre el que deberá
         // ir iterando y creando un objeto con cada Oficina que tenga asociada algún segmento de esa calle,
         // y añadirlos a la lista
-    List<Oficina> listaoficinas = new ArrayList<Oficina>();
-        return listaoficinas;
+        LinkedList<Oficina> oficinas=new LinkedList<>();
+        try{
+            PreparedStatement stmt = conn.prepareStatement("SELECT * FROM OFICINA o INNER JOIN DIRECCION d ON d.id_direccion=o.id_direccion INNER JOIN CALLE c ON c.id_calle=d.id_calle WHERE c.nombre_c=?");
+            stmt.setString(1,calle);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                int id_oficina= rs.getInt("id_oficina");
+                String nombre_oficina= rs.getString("nombre_oficina");
+                String nombre_m= rs.getString("nombre_m");
+                String id_direccion=rs.getString("id_direccion");
+                oficinas.add(new Oficina(id_oficina,"nombre_oficina","nombre_m","id_direccion"));
+
+            }
+            rs.close();
+            stmt.close();
+
+            System.out.println("Oficinas en "+calle+": ");
+            for(int i=0;i<oficinas.size();i++){
+                System.out.println(oficinas.get(i).getId_oficina()+" "+oficinas.get(i).getNombre_oficina());
+            }
+        }catch(Exception e){
+            System.out.println("Error al mostras las oficinas que dan servicio a la calle "+calle);
+        }
+
+
+
+        return oficinas;
     }
 
     public static String cochesSinUtilizarPeriodo(int periodo) {
         // @TODO: complete este método para que muestre por pantalla una lista de los coches que no se han
         // utilizado en los últimos "periodo" días (implementar para periodo=30)
 
-        return new String();
+    LinkedList<Coche> coches = new LinkedList<>();
+    try {
+        PreparedStatement stmt = conn.prepareStatement("SELECT c.capacidad, c.matricula, c.id_oficina from coches c inner join reparto r ON r.matricula = c.matricula WHERE c.matricula NOT IN(SELECT r.matricula from reparto r where r.fecha_reserva BETWEEN date_add(sysdate(),interval -? day) AND sysdate()\n");
+        stmt.setInt(1,periodo);
+        ResultSet rs = stmt.executeQuery();
+        while (rs.next()) {
+            String matricula= rs.getString("matricula");
+            int capacidad= rs.getFloat("capacidad");
+            int id_oficina= rs.getInt("id_oficina");
+            coches.add(new Coche(matricula, capacidad, id_oficina));
+        }
+        rs.close();
+        stmt.close();
+        System.out.println("Coches que no entran en el periodo: ");
+        for(int i=0;i<coches.size();i++){
+            System.out.println(coches.get(i).getCapacidad()+" "+coches.get(i).getMatricula()+" "+coches.get(i).getId_oficina());
+        }
+    }catch(Exception e){
+        System.out.println("Error en la busqueda de coches");
     }
 
-}
+        return coches;
+};
