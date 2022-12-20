@@ -29,7 +29,6 @@ public class Main {
 
         // @TODO pruebe sus funciones
         nuevoCartero("22334455A","Pablo","Garcia Hernandez");
-        nuevoCartero("22334455A","Pablo","Garcia Hernandez");
         carterosRepartoCochePeriodo(7);
         cochesSinUtilizarPeriodo(30);
 
@@ -58,6 +57,7 @@ public class Main {
             stmt.setString(2, nombre);
             stmt.setString(3, apellidos);
             stmt.executeUpdate();
+            System.out.println("Cartero introducido exitosamente");
         }catch (Exception e){
             System.out.println(e.toString());
         }
@@ -150,7 +150,7 @@ public class Main {
             stmt.close();
             System.out.println("Coches que no entran en el periodo: ");
             for (int i = 0; i < coches.size(); i++) {
-                System.out.println(coches.get(i).getCapacidad() + " " + coches.get(i).getMatricula() + " " + coches.get(i).getId_oficina());
+                System.out.println("Capacidad: "+coches.get(i).getCapacidad() + " | Matricula: " + coches.get(i).getMatricula() + " | Oficina asociada: " + coches.get(i).getId_oficina());
             }
         } catch (Exception e) {
             System.out.println("Error en la busqueda de coches");
